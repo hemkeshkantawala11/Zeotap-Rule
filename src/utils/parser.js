@@ -21,13 +21,23 @@ function parseTokens(tokens) {
             }
             stack.pop(); // Remove the "("
             const node = buildASTFromExpr(expr);
+            if (node.error) {
+                return { error: node.error };
+            }
             stack.push(node);
         } else {
+            if (!isValidToken(token)) {
+                return { error: `Invalid token: ${token}` };
+            }
             stack.push(token); // Push regular tokens
         }
     }
 
-    return buildASTFromExpr(stack);
+    const ast = buildASTFromExpr(stack);
+    if (ast.error) {
+        return { error: ast.error };
+    }
+    return ast;
 }
 
 // Function to build AST from an expression
@@ -45,7 +55,12 @@ function buildASTFromExpr(expr) {
             const node = new ASTNode('operator', operator);
             node.left = buildASTFromExpr(leftExpr);
             node.right = buildASTFromExpr(rightExpr);
+            if (node.left.error || node.right.error) {
+                return { error: node.left.error || node.right.error };
+            }
             return node;
+        } else if (expr[i] !== "AND" && expr[i] !== "OR" && isOperator(expr[i])) {
+            return { error: `Invalid operator: ${expr[i]}` };
         }
     }
 
@@ -53,7 +68,18 @@ function buildASTFromExpr(expr) {
         return createOperandNode(expr);
     }
 
-    // throw new Error("Invalid expression");
+    return { error: "Invalid expression" };
+}
+
+function isValidToken(token) {
+    // Add logic to validate tokens
+    const validOperators = ["AND", "OR", ">", "<", ">=", "<=", "=", "==", "!="];
+    return validOperators.includes(token) || /^[a-zA-Z0-9_]+$/.test(token);
+}
+
+function isOperator(token) {
+    const validOperators = ["AND", "OR"];
+    return validOperators.includes(token);
 }
 
 module.exports = { parseTokens };

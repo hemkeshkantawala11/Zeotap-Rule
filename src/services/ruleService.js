@@ -2,7 +2,6 @@ const { tokenize } = require('../utils/tokeniser');
 const { parseTokens } = require('../utils/parser');
 const Rule = require('../models/Rule');
 
-
 exports.createARule = async (req, res) => {
     const ruleString = req.body;
     console.log(ruleString);

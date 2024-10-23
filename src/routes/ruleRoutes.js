@@ -41,5 +41,16 @@ router.get('/get-all-rules', async (req, res) => {
     }
 });
 
-
+router.delete('/delete-rule/:id', async (req, res) => {
+    const {id} = req.params;
+    try {
+        const rule = await Rule.findByIdAndDelete(id);
+        if (!rule) {
+            return res.status(404).json({error: 'Rule not found'});
+        }
+        res.json({success: true});
+    } catch (err) {
+        res.status(500).json({error: err.message});
+    }
+});
 module.exports = router;
