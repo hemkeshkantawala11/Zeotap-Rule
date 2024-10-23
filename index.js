@@ -2,11 +2,24 @@ const express = require('express');
 const app = express();
 const port = 3000;
 const Node = require('./src/models/astNodes');
+const mongoose = require('mongoose');
 
 const rulesRoutes = require('./src/routes/ruleRoutes');
 
 app.use(express.json());
 app.use(express.text());
+
+mongoose.connect('mongodb+srv://hemkesh123kantawala:mongodbpw@test.o1jxyno.mongodb.net/?retryWrites=true&w=majority&appName=test', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+    .then(() => {
+        console.log('Connected to MongoDB');
+    })
+    .catch((err) => {
+        console.log('Failed to connect to MongoDB', err);
+    });
+
 
 
 app.get('/', (req, res) => {
